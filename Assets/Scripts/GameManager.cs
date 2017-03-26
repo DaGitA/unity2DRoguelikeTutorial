@@ -6,6 +6,9 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager instance = null;
     public BoardManager boardManager;
+    public int savedPlayerFoodPoints = 100;
+    [HideInInspector]
+    public bool playersTurn = true;
 
     private int level = 3;
 
@@ -26,5 +29,10 @@ public class GameManager : MonoBehaviour {
     void InitGame()
     {
         boardManager.SetupScene(level);
+    }
+
+    public void GameOver()
+    {
+        this.enabled = false;
     }
 }
