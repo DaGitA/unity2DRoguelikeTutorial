@@ -1,22 +1,26 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Wall : MonoBehaviour {
+public class Wall : MonoBehaviour
+{
+    [SerializeField]
+    private Sprite damageSprite;
+    [SerializeField]
+    private int hitPoints = 4;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private SpriteRenderer spriteRenderer;
 
-    internal void DamageWall(int wallDamage)
+    void Awake()
     {
-        
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    internal void DamageWall(int loss)
+    {
+        spriteRenderer.sprite = damageSprite;
+        hitPoints -= loss;
+        if(hitPoints <= 0)
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
