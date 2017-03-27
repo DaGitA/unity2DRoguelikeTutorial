@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public float levelStartDelay = 2f;
     public float turnDelay = 0.1f;
     public static GameManager instance = null;
     public BoardManager boardManager;
@@ -11,9 +14,12 @@ public class GameManager : MonoBehaviour
     [HideInInspector]
     public bool playersTurn = true;
 
-    private int level = 3;
+    private Text levelText;
+    private GameObject levelImage;
+    private int level = 1;
     private List<Ennemy> ennemies;
     private bool ennemiesMoving;
+    private bool doingSetup;
 
     void Awake()
     {
@@ -33,24 +39,54 @@ public class GameManager : MonoBehaviour
 
     void InitGame()
     {
+        doingSetup = true;
+        levelImage = GameObject.Find("LevelImage");
+        levelText = GameObject.Find("LevelText").GetComponent<Text>();
+        levelText.text = "Day " + level;
+        levelImage.SetActive(true);
+        Invoke("HideLevelImage", levelStartDelay);
         ennemies.Clear();
         boardManager.SetupScene(level);
     }
 
+    private void HideLevelImage()
+    {
+        levelImage.SetActive(false);
+        doingSetup = false;
+    }
+
     public void GameOver()
     {
+        levelText.text = "After " + level + " days, you starved";
+        levelImage.SetActive(true);
         this.enabled = false;
     }
 
     void Update()
     {
-        if(playersTurn || ennemiesMoving)
+        if (playersTurn || ennemiesMoving || doingSetup)
         {
             return;
         }
 
         StartCoroutine(MoveEnemies());
     }
+
+    void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
+    {
+        level++;
+        InitGame();
+    }
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+
 
     public void AddEnnemyToList(Ennemy script)
     {

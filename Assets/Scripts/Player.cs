@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Player : MovingObject
 {
+    public Text foodText;
+
     [SerializeField]
     private int wallDamage = 1;
     [SerializeField]
@@ -32,6 +35,7 @@ public class Player : MovingObject
 
     public void LoseFood(int loss)
     {
+        foodText.text = "-" + loss + " food";
         animator.SetTrigger("playerHit");
         food -= loss;
         CheckIfGameOver();
@@ -39,6 +43,7 @@ public class Player : MovingObject
 
     protected override void Start()
     {
+        foodText.text = "food: " + food;
         animator = GetComponent<Animator>();
         food = GameManager.instance.savedPlayerFoodPoints;
         base.Start();
@@ -97,6 +102,7 @@ public class Player : MovingObject
     protected override void AttemptMove<T>(int xDir, int yDir)
     {
         food--;
+        foodText.text = "food: " + food;
         base.AttemptMove<T>(xDir, yDir);
         RaycastHit2D hit;
         CheckIfGameOver();
@@ -112,11 +118,13 @@ public class Player : MovingObject
         }
         else if (other.tag == "Food")
         {
+            foodText.text = "+" + pointsPerFood + " food";
             food += pointsPerFood;
             other.gameObject.SetActive(false);
         }
         else if (other.tag == "Soda")
         {
+            foodText.text = "+" + pointsPerSoda + " food";
             food += pointsPerSoda;
             other.gameObject.SetActive(false);
         }
